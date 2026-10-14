@@ -1,4 +1,30 @@
-const items=[{name:'สีเจลโทนสุภาพ',cat:'สีเจล',color:'#ecd5d9',bg:'#f7eeef',type:'bottle',desc:'ตัวอย่างคอลเลกชันสีละมุน สำหรับนำเสนอเฉดสีที่เหมาะกับลุคประจำวัน'},{name:'สีเจลโทนน้ำเงิน',cat:'สีเจล',color:'#2664b0',bg:'#edf2fa',type:'bottle',desc:'ตัวอย่างคอลเลกชันเฉดน้ำเงิน สำหรับงานเล็บที่ต้องการความโดดเด่น'},{name:'เครื่องอบเล็บ',cat:'อุปกรณ์',bg:'#f0f3f6',type:'tool',desc:'พื้นที่ตัวอย่างสำหรับเครื่องอบเล็บ สามารถเพิ่มรุ่น ขนาด และคุณสมบัติจริงของสินค้าได้'},{name:'ของตกแต่งเล็บประกายมุก',cat:'ตกแต่งเล็บ',bg:'#f3f0f8',type:'gems',desc:'ตัวอย่างหมวดของตกแต่งเล็บ สำหรับสร้างรายละเอียดให้แต่ละดีไซน์'}];
-const dialog=document.querySelector('#detail');function show(title,desc){document.querySelector('#dialog-content').replaceChildren();const label=document.createElement('div');label.className='dialog-label';label.textContent='i-NAIL BEAUTY SUPPLY · ตัวอย่าง';const heading=document.createElement('h2');heading.textContent=title;const p=document.createElement('p');p.textContent=desc;const note=document.createElement('p');note.textContent='รอข้อมูลสินค้า ราคา และช่องทางติดต่อจริงจากร้าน';document.querySelector('#dialog-content').append(label,heading,p,note);dialog.showModal()}
-function card(item,index){const button=document.createElement('button');button.className='card';button.setAttribute('aria-label','ดูรายละเอียด '+item.name);button.innerHTML=`<div class="product-art" style="--bg:${item.bg}"><span class="badge">${index===0?'FEATURED':'SELECTED'}</span>${item.type==='bottle'?`<div class="bottle"><div class="cap"></div><div class="glass" style="background:linear-gradient(105deg,${item.color},#ffffff88,${item.color})"><strong>i-NAIL</strong><small>COLOR GEL</small></div></div>`:`<div class="${item.type}"></div>`}</div><div class="category">${item.cat} / ตัวอย่างสินค้า</div><h3>${item.name}</h3><div class="card-bottom"><span>รออัปเดตราคา</span><span>ดูรายละเอียด ↗</span></div>`;button.addEventListener('click',()=>show(item.name,item.desc));return button}
-items.forEach((item,index)=>document.querySelector('#featured-grid').append(card(item,index)));let selected='ทั้งหมด';function render(){const q=document.querySelector('#search').value.trim().toLowerCase();const filtered=items.filter(item=>(selected==='ทั้งหมด'||item.cat===selected)&&(item.name+item.cat).toLowerCase().includes(q));document.querySelector('#products').replaceChildren(...filtered.map(card));document.querySelector('#empty').hidden=filtered.length>0}document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{selected=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button))});render()}));document.querySelector('#search').addEventListener('input',render);document.querySelector('[data-promo]').addEventListener('click',()=>show('Mix & Match — เซ็ตโปรดในแบบคุณ','พื้นที่สำหรับโปรโมชั่นเซ็ตสินค้า สามารถกำหนดรายการร่วมโปรโมชั่น ราคา ระยะเวลา และเงื่อนไขได้เมื่อร้านส่งรายละเอียดจริง'));document.querySelector('.close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});render();
+'use strict';
+const products = {
+  halloween: { title: 'Tadee Halloween Promotion', image: 'assets/tadee-halloween.jpg', alt: 'โปสเตอร์โปรโมชั่น Tadee Halloween ราคา 399 บาท จากปกติ 556 บาท', description: 'คอลเลกชันสีสดใส พร้อมภาพไอเดียตกแต่งเล็บธีมฮาโลวีนและลายหมี รายละเอียดสินค้าและเฉดสีตามภาพที่ร้านจัดเตรียม', price: '฿399', original: '฿556' },
+  chrome: { title: 'พาเลตผงขัดเล็บ Spr013 / Spr059', image: 'assets/chrome-palette.jpg', alt: 'พาเลต Spr013 และ Spr059 พร้อมตัวอย่างเล็บโครม', description: 'พาเลตผงขัดเล็บโทนเมทัลลิก Spr013 และ Spr059 พร้อมตัวอย่างเฉดสีและผลงานเล็บตามภาพจากร้าน', price: 'สอบถามราคากับร้าน' }
+};
+const dialog = document.querySelector('#product-dialog');
+let trigger = null;
+function openProduct(key, button) {
+  const product = products[key];
+  if (!product) return;
+  trigger = button;
+  const image = document.querySelector('#dialog-image');
+  image.src = product.image;
+  image.alt = product.alt;
+  document.querySelector('#dialog-title').textContent = product.title;
+  document.querySelector('#dialog-description').textContent = product.description;
+  const price = document.querySelector('#dialog-price');
+  price.replaceChildren(document.createTextNode(product.price));
+  if (product.original) { const original = document.createElement('del'); original.textContent = product.original; price.append(original); }
+  document.querySelector('#full-image').href = product.image;
+  dialog.showModal();
+}
+document.querySelectorAll('[data-item]').forEach(button => button.addEventListener('click', () => openProduct(button.dataset.item, button)));
+document.querySelector('.close').addEventListener('click', () => dialog.close());
+dialog.addEventListener('close', () => trigger?.focus());
+dialog.addEventListener('click', event => {
+  if (event.target !== dialog) return;
+  const bounds = dialog.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+});
