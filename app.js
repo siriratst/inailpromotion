@@ -9,7 +9,7 @@ const stickerGroups = ['ทั้งหมด', ...new Set(stickerCatalog.map(it
 let activeStickerGroup = 'ทั้งหมด';
 for (const item of stickerCatalog) {
   const key = 'sticker-' + item.code;
-  products[key] = { title: 'สติ๊กเกอร์คริสต์มาส ' + item.code, image: item.image, alt: 'สติ๊กเกอร์ติดเล็บคริสต์มาส รหัส ' + item.code, description: 'สติ๊กเกอร์ตกแต่งเล็บธีมคริสต์มาส รหัส ' + item.code + ' ดูลวดลายและตัวอย่างการใช้งานตามภาพสินค้าจริงจากร้าน', price: 'สอบถามราคาและสต็อกกับร้าน' };
+  products[key] = { title: 'สติ๊กเกอร์คริสต์มาส ' + item.code, image: item.image, alt: 'สติ๊กเกอร์ติดเล็บคริสต์มาส รหัส ' + item.code, description: 'สติ๊กเกอร์ตกแต่งเล็บธีมคริสต์มาส รหัส ' + item.code + ' ดูลวดลายและตัวอย่างการใช้งานตามภาพสินค้าจริงจากร้าน', price: '฿39', original: '฿59' };
   const card = document.createElement('article');
   card.className = 'sticker-card';
   card.dataset.code = item.code;
@@ -37,7 +37,14 @@ for (const item of stickerCatalog) {
   details.dataset.item = key;
   details.textContent = 'ดูรายละเอียด ↗';
   details.setAttribute('aria-label', 'รายละเอียดสติ๊กเกอร์ ' + item.code);
-  label.append(title, note, details);
+  const stickerPrice = document.createElement('div');
+  stickerPrice.className = 'price sticker-price';
+  stickerPrice.setAttribute('aria-label', 'ราคาโปรโมชั่น 39 บาท จากปกติ 59 บาท');
+  stickerPrice.append(document.createTextNode(products[key].price));
+  const oldPrice = document.createElement('del');
+  oldPrice.textContent = products[key].original;
+  stickerPrice.append(oldPrice);
+  label.append(title, note, stickerPrice, details);
   card.append(button, label);
   stickerGrid.append(card);
 }
